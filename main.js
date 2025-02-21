@@ -29,25 +29,22 @@ async function checkWeather(city) {
         humidityValue.innerHTML = data.main.humidity + "%"
         windValue.innerHTML = Math.round(data.wind.speed * 2.237) + "mph"
 
-        if(data.weather[0].main == "Clear") {
-            weatherIcon.src = "Images/weather-icons/clearSky.png"
-        }else if(data.weather[0].description == "few clouds") {
-            weatherIcon.src = "Images/weather-icons/fewClouds.png"
-        }else if(data.weather[0].description == "scattered clouds") {
-            weatherIcon.src = "Images/weather-icons/scatteredClouds.png"
-        }else if(data.weather[0].description == "broken clouds" || "overcast clouds") {
-            weatherIcon.src = "Images/weather-icons/brokenClouds.png"
-        }else if(data.weather[0].main == "Rain") {
-            weatherIcon.src = "Images/weather-icons/showerRain.png"
-        }else if(data.weather[0].main == "Drizzle") {
-            weatherIcon.src = "Images/weather-icons/rain.png"
-        }else if(data.weather[0].main == "Thunderstorm") {
-            weatherIcon.src = "Images/weather-icons/thunderstorm.png"
-        }else if(data.weather[0].main == "Snow") {
-            weatherIcon.src = "Images/weather-icons/snow.png"
-        }else if(data.weather[0].main == "Mist") {
-            weatherIcon.src = "Images/weather-icons/mist.png"
+        let weatherIcons = {
+            "Clear": "clearSky.png",
+            "few clouds": "fewClouds.png",
+            "scattered clouds": "scatteredClouds.png",
+            "broken clouds": "brokenClouds.png",
+            "overcast clouds": "brokenClouds.png",
+            "Rain": "showerRain.png",
+            "Drizzle": "rain.png",
+            "Thunderstorm": "thunderstorm.png",
+            "Snow": "snow.png",
+            "Mist": "mist.png"
         }
+
+        let weatherCondition = data.weather[0].main in weatherIcons ? data.weather[0].main : data.weather[0].description;
+        let iconFile = weatherIcons[weatherCondition] || "mist.png";
+        weatherIcon.src = `Images/weather-icons/${iconFile}`
 } catch(error) {
     console.error("error fetching weather", error);
     document.querySelector(".city").innerHTML = "Error fetching weather"
