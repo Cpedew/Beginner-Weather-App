@@ -14,6 +14,9 @@ let windValue = document.querySelector(".wind");
 
 async function checkWeather(city) {
     let response, data, response2, locationData;
+    weatherIcon.style.display = "none"
+    const loadingAnimation = document.querySelector(".loading-animation")
+    loadingAnimation.style.display = "block";
     
     try {
         response = await fetch(apiUrl + city + `&appid=${apiKey}`);
@@ -25,22 +28,29 @@ async function checkWeather(city) {
         locationData = await response2.json()
     } catch(error) {
         document.querySelector(".location").innerHTML = "Error fetching weather"
-        weatherIcon.src = "Images/cityNotFound.png"
         tempValue.innerHTML = "0" + "°C";
         humidityValue.innerHTML = "0" + "%"
         windValue.innerHTML = "0" + "mph"
-        return console.error("error fetching weather", error);
+        console.error("error fetching weather", error);
+
+        return
+    } finally {
+        loadingAnimation.style.display = "none"    
     }
+
+
 
         console.log(data);
         console.log(locationData)
- 
+
+        weatherIcon.style.display = "block";
+
         tempValue.innerHTML = Math.round(data.main.temp) + "°C";
         humidityValue.innerHTML = data.main.humidity + "%"
         windValue.innerHTML = Math.round(data.wind.speed * 2.237) + "mph"
        
         let displayCity = locationData.results[0].components.city || locationData.results[0].components.town ||  locationData.results[0].components.village || "";               
-        let displayState = locationData.results[0].components.state;
+        let displayState = locationData.results[0].components.state || "";
         let displayCountry = locationData.results[0].components.country;
         locationValue.innerHTML = `${displayCity} ${displayState} ${displayCountry}`;
 
@@ -72,9 +82,15 @@ inputText.addEventListener("keyup", (event) => {
 
 searchBtn.addEventListener("click", () => {
     let city = inputText.value.trim();
-    if (city) {
-        checkWeather(city);
-    } else {
-
+   
+    if (city === "") {
+        locationValue.innerHTML = "Please enter a city name";
+        return;
     }
+    
+    if (!/^[a-zA-Z\s\-\']+$/ .test(city)) {
+        locationValue.innerHTML = "Invalid city name";
+        return;
+    }
+        checkWeather(city);
 })
